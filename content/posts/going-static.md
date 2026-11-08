@@ -1,27 +1,29 @@
 ---
 title: 把服务器拿掉：一个博客的静态化记录
-date: 2026-11-08 21:00
+date: 2026-11-08 13:21
 categories: [技术]
 tags: [静态站点, GitHub Pages, 架构]
-excerpt: 完整版 Cyanote 需要一台常驻的 Node 进程和一份 SQLite 文件。为了写几篇文章养一台服务器不划算，我把它搬进了静态文件，代价写在最后。
+excerpt: 完整版 Cyanote 需要一台一直开着的机器。家里主机做不到 24 小时运行，云服务器要花钱，域名还要备案。我把它搬进了静态文件，代价写在最后。
 cover: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMjAwJyBoZWlnaHQ9JzQ4MCcgdmlld0JveD0nMCAwIDEyMDAgNDgwJz48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9J2cnIHgxPScwJyB5MT0nMCcgeDI9JzEnIHkyPScxJz48c3RvcCBvZmZzZXQ9JzAnIHN0b3AtY29sb3I9JyMwNTBiMWMnLz48c3RvcCBvZmZzZXQ9JzAuNTUnIHN0b3AtY29sb3I9JyMwYjJhNmInLz48c3RvcCBvZmZzZXQ9JzEnIHN0b3AtY29sb3I9JyMxZDRlZDgnLz48L2xpbmVhckdyYWRpZW50PjxyYWRpYWxHcmFkaWVudCBpZD0ncicgY3g9JzAuNzQnIGN5PScwLjMyJyByPScwLjYyJz48c3RvcCBvZmZzZXQ9JzAnIHN0b3AtY29sb3I9JyM2MGE1ZmEnIHN0b3Atb3BhY2l0eT0nMC4zNCcvPjxzdG9wIG9mZnNldD0nMScgc3RvcC1jb2xvcj0nIzYwYTVmYScgc3RvcC1vcGFjaXR5PScwJy8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9JzEyMDAnIGhlaWdodD0nNDgwJyBmaWxsPSd1cmwoI2cpJy8+PHJlY3Qgd2lkdGg9JzEyMDAnIGhlaWdodD0nNDgwJyBmaWxsPSd1cmwoI3IpJy8+PGcgZmlsbD0nbm9uZScgc3Ryb2tlPScjOTNjNWZkJyBzdHJva2Utb3BhY2l0eT0nMC4yNic+PGNpcmNsZSBjeD0nOTY1JyBjeT0nMjQyJyByPSc1OCcvPjxjaXJjbGUgY3g9Jzk2NScgY3k9JzI0Micgcj0nMTA4Jy8+PGNpcmNsZSBjeD0nOTY1JyBjeT0nMjQyJyByPScxNjQnLz48Y2lyY2xlIGN4PSc5NjUnIGN5PScyNDInIHI9JzIyNicvPjwvZz48ZyBmb250LWZhbWlseT0nc3lzdGVtLXVpLFNlZ29lIFVJLHNhbnMtc2VyaWYnPjx0ZXh0IHg9JzgwJyB5PScyMTInIGZvbnQtc2l6ZT0nNjQnIGZvbnQtd2VpZ2h0PSc3MDAnIGZpbGw9JyNmZmZmZmYnPuaKiuacjeWKoeWZqOaLv+aOiTwvdGV4dD48dGV4dCB4PSc4MicgeT0nMjcyJyBmb250LXNpemU9JzI1JyBmaWxsPScjYmZkYmZlJz7mioogRXhwcmVzcyArIFNRTGl0ZSDmjaLmiJDkuIDku70gSlNPTjwvdGV4dD48bGluZSB4MT0nODInIHkxPSczMjInIHgyPSczMDAnIHkyPSczMjInIHN0cm9rZT0nIzYwYTVmYScgc3Ryb2tlLW9wYWNpdHk9JzAuNTUnLz48dGV4dCB4PSc4MicgeT0nMzY2JyBmb250LXNpemU9JzE5JyBmaWxsPScjOTNjNWZkJyBsZXR0ZXItc3BhY2luZz0nNic+Q1lBTk9URSBMSVRFPC90ZXh0PjwvZz48L3N2Zz4="
 ---
 
 # 把服务器拿掉
 
-十月的某个晚上，我躺在床上想到一句话，希望它第二天出现在博客上。完整版 Cyanote 办不到，它要求我先打开电脑，起一个 Node 进程，进 `/admin`，把字敲进编辑框，点保存。
+十月的某个晚上，我躺在床上想到一句话，希望它第二天出现在博客上。完整版 Cyanote 做得到，前提是跑它的那台机器一直开着。我的电脑睡前关机，做不到；租一台云主机，一年几百块，域名还要备案。为十几篇文章付这笔账，我拖了很久。
 
-这台机器平时不声不响，摊开来看是这样：一个 Express 进程，一份 SQLite 文件，一个首次启动时自动生成的管理令牌，一套按文件头校验图片的上传接口，四条限流规则，一个按 IP 每小时计一次的浏览量。
+那套系统是齐备的。一个 Express 进程，一份 SQLite 文件，一个首次启动时自动生成的管理令牌，一套按文件头校验图片的上传接口，四条限流规则，一个按 IP 每小时计一次的浏览量。写文章的时候它很好用：登录进去，左写右看，图片拖进编辑框就有地址，点发布就上线。换一台设备，带着令牌就能接着写。
 
-这些东西没有一样是我想要的。我想要一个能写字的地方。
+它不重，一个进程一份文件就能跑。缺的是一块能一直通电的地方。
+
+于是方向调过来：阅读那一半做成一组文件，放在免费的静态托管上；写作那一半留在本地。想发文章，我在自己的电脑上写好，推送，剩下的事情交给 CI。
 
 ## 先写下要留下的
 
-动手前列了两张单子。留下的有：首页、文章列表、分类、标签、归档、关于、暗色主题、代码高亮、`#/post/slug` 这样的地址。丢掉的有：在线编辑器、令牌鉴权、图片上传、限流、浏览量写回、分类与标签的在线改名。
+动手前列了两张单子。阅读端要留下：首页、文章列表、分类、标签、归档、关于、暗色主题、代码高亮、`#/post/slug` 这样的地址。写作端要留的只有 Markdown 文本本身，令牌鉴权、图片上传、限流、浏览量写回、分类与标签的在线改名全部退场。
 
-分界线很好找。写作需要服务器，阅读不需要。所有会写入的动作都在 `/admin` 后面，公开站点从头到尾只读。
+分界线很好找。原来所有会写入的动作都在 `/admin` 后面，公开站点从头到尾只读。写作搬到本地之后，服务器那一侧只剩下阅读，而阅读是一堆文件就能满足的事。
 
-这条线一画，工程量就有了形状。前台 `public/js` 893 行，管理台 `admin/js` 953 行，服务端 `server` 1156 行。要搬走的是最前面那 893 行，要扔掉的是后面两千行。
+这条线一画，工程量就有了形状。前台 `public/js` 893 行，管理台 `admin/js` 953 行，服务端 `server` 1156 行。静态版只需要最前面那 893 行，后面两千行留在完整版里，不再参与这个站点。
 
 ## 切在接缝上
 
@@ -70,7 +72,7 @@ items = [...items].sort(
 ```markdown
 ---
 title: 把服务器拿掉
-date: 2026-11-08 21:00
+date: 2026-11-08 09:00
 categories: [技术]
 tags: [静态站点, GitHub Pages, 架构]
 excerpt: 一句话摘要，留空就截正文前 150 字
@@ -136,6 +138,8 @@ Hexo、Hugo、Astro 都能把一堆 md 变成站点，用它们更省事。省�
 搜索是全量内存过滤。索引里存着每篇文章的全文，读者打开首页就把这 18KB 全部下载完。文章到几百篇时，文件会变成几百 KB，首屏要等它。
 
 没有在线编辑器。改一个错别字也要走一次提交。
+
+随时提交这件事，服务器确实更强。完整版握着一个令牌，在任意一台设备上登录，写完就能发。现在要改一篇文章，得有仓库的写权限，能用的只有网页版编辑框，和那个语雀式的编辑器差得远。
 
 评论要挂外部服务，我没有做。分类改名靠全文查找替换，比点两下鼠标慢，也比点两下鼠标可靠。
 
