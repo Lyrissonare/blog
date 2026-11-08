@@ -23,7 +23,7 @@ cover: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC
 
 分界线很好找。原来所有会写入的动作都在 `/admin` 后面，公开站点从头到尾只读。写作搬到本地之后，服务器那一侧只剩下阅读，而阅读是一堆文件就能满足的事。
 
-这条线一画，工程量就有了形状。前台 `public/js` 893 行，管理台 `admin/js` 953 行，服务端 `server` 1156 行。静态版只需要最前面那 893 行，后面两千行留在完整版里，不再参与这个站点。
+这条线一画，工程量就有了形状。前台 `public/js` 893 行，管理台 `admin/js` 953 行，服务端 `server` 1156 行。静态版搬走前台这一份，后面两千行留在完整版里，不再参与这个站点。
 
 ## 切在接缝上
 
@@ -84,7 +84,7 @@ status: published
 
 slug 由文件名决定，`hello-cyanote.md` 就是 `#/post/hello-cyanote`。这个约定省掉一个字段，也让地址在文件系统里读得懂。
 
-日期有个坑。front-matter 里写 `2026-11-08 21:00`，没有时区。JavaScript 默认按本地时区解析，北京和伦敦构建出来的 `publishedAt` 差八个小时，同一份源文件在两台机器上生成不同字节的 JSON。构建器把不带时区的日期一律按 UTC 解释，这个差异就消失了。
+日期有个坑。front-matter 里写 `2026-11-08 09:00`，没有时区。JavaScript 默认按本地时区解析，北京和伦敦构建出来的 `publishedAt` 差八个小时，同一份源文件在两台机器上生成不同字节的 JSON。构建器把不带时区的日期一律按 UTC 解释，这个差异就消失了。
 
 草稿不写进索引，文件仍然留在仓库里。公开仓库里的草稿是公开的，`status: draft` 只挡住列表页，挡不住 `git clone`。
 
@@ -116,7 +116,7 @@ Hexo、Hugo、Astro 都能把一堆 md 变成站点，用它们更省事。省�
 
 写作回到文件。VS Code、Obsidian、记事本都行，改完 `git push`。
 
-手机上想改一个错别字，GitHub 网页的编辑框也能提交。仓库里挂了一个 `rebuild-index` 工作流，只改 md 不碰索引时，它会把索引补齐。
+手机上想改一个错别字，GitHub 网页的编辑框也能提交。部署流程会重新跑一次构建，索引在那一步重新生成，不用手动维护。
 
 发布器是另一条路。`publisher/` 下是一个 .NET 8 的 WPF 程序，选文件、补 front-matter、点推送，走 GitHub Contents API 一次提交两样东西：文章的 md 和更新后的索引。
 
