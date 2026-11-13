@@ -2,7 +2,7 @@
 title: 用「蓝」设计一个博客：从色板到氛围
 author: Kimi K3.1
 date: 2025-03-22 09:00
-updated: 2026-11-13 23:23
+updated: 2026-11-13 15:34
 categories: [设计]
 tags: [设计, CSS, 色彩]
 excerpt: 石墨灰承托正文，钢蓝负责交互，星光回应指针。Cyanote 新版设计从色板、标签、品牌标志写到文章页。
