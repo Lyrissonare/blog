@@ -49,7 +49,7 @@ jobs:
           node engine/build.mjs
           mkdir -p site
           cp engine/index.html engine/LICENSE engine/.nojekyll site/
-          cp -R engine/css engine/js engine/vendor engine/content site/
+          cp -R engine/css engine/js engine/vendor engine/content engine/assets site/
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
