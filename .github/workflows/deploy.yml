@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
@@ -60,6 +61,21 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
+
+      - name: Wait for artifact to be visible
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            n=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts" \
+                  --jq '[.artifacts[] | select(.name == "github-pages")] | length')
+            echo "attempt ${i}: ${n} github-pages artifact(s)"
+            if [ "${n}" -ge 1 ]; then exit 0; fi
+            sleep 4
+          done
+          echo "::error::github-pages artifact never showed up in the run's artifact list"
+          exit 1
 
       - name: Deploy to GitHub Pages
         id: deployment
