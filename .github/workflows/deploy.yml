@@ -62,16 +62,18 @@ jobs:
         with:
           path: site
 
-      - name: Wait for artifact to be visible
+      - name: Wait for artifact to be indexed
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          # deploy-pages 查的是按 name 过滤的接口，产物上传后该索引有几十秒复制延迟，
+          # 立刻部署会拿到 0 条，报 "No artifacts named github-pages"。
           for i in $(seq 1 30); do
-            n=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts" \
+            n=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts?name=github-pages" \
                   --jq '[.artifacts[] | select(.name == "github-pages")] | length')
             echo "attempt ${i}: ${n} github-pages artifact(s)"
-            if [ "${n}" -ge 1 ]; then exit 0; fi
+            if [ "${n}" -ge 1 ]; then sleep 8; exit 0; fi
             sleep 4
           done
           echo "::error::github-pages artifact never showed up in the run's artifact list"
